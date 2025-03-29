@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Dieta Barf Medellín</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background-color: white;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #006400;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input, select {
+      width: 80%;
+      padding: 10px;
+      margin: 10px auto;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: block;
+    }
+    button {
+      background-color: #008000;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+    }
+    #resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .hidden {
+      display: none;
+    }
+    #nota {
+      font-size: 14px;
+      margin-top: 20px;
+      color: #666;
+    }
+    #regresar {
+      background-color: #006400;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora Dieta BARF Medellín</h1>
+    
+    <label for="peso">Peso actual de tu mascota (kg):</label>
+    <input type="number" id="peso" step="0.1" min="0.1" placeholder="Ingresa el peso actual">
+    
+    <label>
+      <input type="checkbox" id="sobrepeso" onchange="toggleIdealWeight()"> ¿Tiene sobrepeso?
+    </label>
+    
+    <div id="idealPesoDiv" class="hidden">
+      <label for="pesoIdeal">Peso ideal (kg):</label>
+      <input type="number" id="pesoIdeal" step="0.1" min="0.1" placeholder="Ingresa el peso ideal">
+    </div>
+    
+    <label for="etapa">Etapa de vida:</label>
+    <select id="etapa">
+      <option value="cachorro_menor">Cachorro (<6 meses)</option>
+      <option value="cachorro_medio">Cachorro (6-12 meses)</option>
+      <option value="adulto">Adulto (>12 meses)</option>
+    </select>
+    
+    <label for="tallaje">Tamaño (Tallaje):</label>
+    <select id="tallaje">
+      <option value="pequeno">Pequeño</option>
+      <option value="mediano">Mediano</option>
+      <option value="grande">Grande</option>
+    </select>
+    
+    <label>
+      <input type="checkbox" id="edadAvanzada">
+      La mascota es de edad avanzada
+    </label>
+    
+    <button onclick="calcularDieta()">Calcular</button>
+    <p id="resultado"></p>
+    
+    <!-- Texto explicativo -->
+    <p id="nota">Este cálculo es aproximado y tiene como objetivo brindarte una guía general para determinar la cantidad de comida que necesita tu mascota. Para información más detallada, te recomendamos contactar a un asesor o veterinario.</p>
+    
+    <!-- Botón de regreso -->
+    <a id="regresar" href="https://dietabarfmedellin.com">Regresar al sitio</a>
+  </div>
+  
+  <script>
+    function toggleIdealWeight() {
+      var sobrepesoCheckbox = document.getElementById("sobrepeso");
+      var idealDiv = document.getElementById("idealPesoDiv");
+      if (sobrepesoCheckbox.checked) {
+        idealDiv.classList.remove("hidden");
+      } else {
+        idealDiv.classList.add("hidden");
+      }
+    }
+    
+    function calcularDieta() {
+      // Obtener el peso inicial
+      let peso = parseFloat(document.getElementById("peso").value);
+      if (isNaN(peso) || peso <= 0) {
+        document.getElementById("resultado").innerHTML = "Por favor, ingresa un peso válido.";
+        return;
+      }
+      
+      // Si la mascota tiene sobrepeso, se usa el peso ideal
+      const sobrepeso = document.getElementById("sobrepeso").checked;
+      if (sobrepeso) {
+        const pesoIdeal = parseFloat(document.getElementById("pesoIdeal").value);
+        if (isNaN(pesoIdeal) || pesoIdeal <= 0) {
+          document.getElementById("resultado").innerHTML = "Por favor, ingresa un peso ideal válido.";
+          return;
+        }
+        peso = pesoIdeal;
+      }
+      
+      const etapa = document.getElementById("etapa").value;
+      const tallaje = document.getElementById("tallaje").value;
+      const edadAvanzada = document.getElementById("edadAvanzada").checked;
+      
+      let porcentaje = 0;
+      
+      // Definir el porcentaje base según la etapa y el tallaje
+      if (etapa === "adulto") {
+        if (tallaje === "pequeno") {
+          porcentaje = 0.03; // 3%
+        } else if (tallaje === "mediano") {
+          porcentaje = 0.025; // 2.5%
+        } else if (tallaje === "grande") {
+          porcentaje = 0.02; // 2%
+        }
+      } else if (etapa === "cachorro_menor") {
+        porcentaje = 0.06; // 6%
+      } else if (etapa === "cachorro_medio") {
+        if (tallaje === "pequeno") {
+          porcentaje = 0.045; // 4.5%
+        } else if (tallaje === "mediano") {
+          porcentaje = 0.0425; // 4.25%
+        } else if (tallaje === "grande") {
+          porcentaje = 0.04; // 4%
+        }
+      }
+      
+      // Calcular la cantidad base en gramos
+      let cantidadBase = peso * porcentaje * 1000;
+      
+      // Para mascotas de edad avanzada, aplicar una reducción del 20%
+      let cantidadReducida = cantidadBase;
+      if (edadAvanzada) {
+        cantidadReducida = cantidadBase * 0.8;
+      }
+      
+      let mensaje = "";
+      if (edadAvanzada) {
+        mensaje = "Cantidad recomendada: entre " + cantidadReducida.toFixed(0) + " y " + cantidadBase.toFixed(0) + " gramos diarios.";
+      } else {
+        mensaje = "Cantidad recomendada: " + cantidadBase.toFixed(0) + " gramos diarios.";
+      }
+      
+      document.getElementById("resultado").innerHTML = mensaje;
+    }
+  </script>
+</body>
+</html>
